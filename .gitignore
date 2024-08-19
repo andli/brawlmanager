@@ -1,0 +1,25 @@
+# Node.js
+bm-frontend/node_modules/
+bm-frontend/build/
+bm-frontend/.env.local
+bm-frontend/.next/
+bm-frontend/.cache/
+
+# Python
+bm-backend/__pycache__/
+bm-backend/.env
+bm-backend/venv/
+bm-backend/.pytest_cache/
+bm-backend/.mypy_cache/
+bm-backend/.DS_Store
+
+# Docker
+docker-compose.override.yml
+*.log
+.dockerignore
+.env
+*.env
+
+# OS Files
+.DS_Store
+Thumbs.db

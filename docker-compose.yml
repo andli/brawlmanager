@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  bm-backend:
+    build: ./bm-backend
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - db
+
+  bm-frontend:
+    build: ./bm-frontend
+    ports:
+      - "3000:3000"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: brawlmanagerdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

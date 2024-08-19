@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+databases
+python-dotenv
+httpx
+oauthlib
+authlib

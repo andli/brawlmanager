@@ -18,6 +18,7 @@ docker-compose.override.yml
 *.log
 .dockerignore
 .env
+.env.local
 *.env
 
 # OS Files

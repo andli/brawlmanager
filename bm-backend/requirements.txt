@@ -5,4 +5,10 @@ databases
 python-dotenv
 httpx
 oauthlib
+<<<<<<< HEAD
 authlib
+=======
+authlib
+asyncpg
+psycopg2-binary
+>>>>>>> f88349e (Initial commit)

@@ -2,10 +2,13 @@ version: '3.7'
 
 services:
   bm-backend:
-    build: ./bm-backend
+    build:
+      context: .
+      dockerfile: bm-backend/Dockerfile
+      args:
+        ENV: ${ENV:-local}  # Use ENV variable or default to 'local'
     ports:
       - "8000:8000"
-    env_file: .env
     depends_on:
       - db
 

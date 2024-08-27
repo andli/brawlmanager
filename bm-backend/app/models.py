@@ -1,11 +1,9 @@
-from sqlalchemy import Column, Integer, String, Table
-from app.db import metadata
+from sqlalchemy import Column, Integer, String
+from app.db import Base
 
-users = Table(
-    "users",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("email", String(120), unique=True, index=True),
-    Column("name", String(120)),
-    Column("picture", String(200)),
-)
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=True)
+    picture = Column(String, nullable=True)

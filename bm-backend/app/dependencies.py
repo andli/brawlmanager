@@ -9,13 +9,13 @@ oauth.register(
     client_secret=settings.GOOGLE_CLIENT_SECRET,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     authorize_params=None,
-    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_url='https://oauth2.googleapis.com/token',  # Updated URL
     access_token_params=None,
     refresh_token_url=None,
-    redirect_uri=None,
+    redirect_uri=settings.GOOGLE_REDIRECT_URI,  # Ensure this matches your Google Cloud Console setting
     client_kwargs={
         'scope': 'openid email profile',
         'issuer': 'https://accounts.google.com',
     },
-    server_metadata_url= 'https://accounts.google.com/.well-known/openid-configuration'
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration'
 )

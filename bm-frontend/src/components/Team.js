@@ -1,8 +1,19 @@
 // bm-frontend/src/components/Team.js
 import React from 'react';
-import Player from './Player';  // Correctly importing Player
+import Player from './Player';
+import CreateTeamForm from './CreateTeamForm';
 
-function Team({ team }) {
+function Team({ team, onTeamCreated }) {
+  if (!team) {
+    // If no team exists, show the CreateTeamForm
+    return (
+      <div>
+        <p>You don't have a team yet. Create one!</p>
+        <CreateTeamForm onTeamCreated={onTeamCreated} />
+      </div>
+    );
+  }
+
   return (
     <div>
       <h3>{team.name}</h3>

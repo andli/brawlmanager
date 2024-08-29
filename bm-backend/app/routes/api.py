@@ -1,36 +1,40 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from app.db import get_db
-from app.models import User, Team, Player
+from app.models import Team, User
 
 router = APIRouter()
 
+# Define the CreateTeamRequest class here
+class CreateTeamRequest(BaseModel):
+    name: str
+    race: str
+
 @router.get("/user")
 def get_user(db: Session = Depends(get_db)):
-    # Replace with logic to get the authenticated user's ID
-    user_id = 1
+    user_id = 1  # Replace with logic to get the authenticated user's ID
     user = db.query(User).filter(User.id == user_id).first()
-    return {
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "picture": user.picture,
-        "teams": [{"id": team.id, "name": team.name} for team in user.teams]
-    }
+    return user
 
 @router.get("/teams")
 def get_teams(db: Session = Depends(get_db)):
+    teams = db.query(Team).all()
+    return teams
+
+@router.post("/teams")
+def create_team(team_data: CreateTeamRequest, db: Session = Depends(get_db)):
     user_id = 1  # Replace with logic to get the authenticated user's ID
-    teams = db.query(Team).filter(Team.owner_id == user_id).all()
-    return [{
-        "id": team.id,
-        "name": team.name,
-        "race": team.race,
-        "players": [{
-            "id": player.id,
-            "name": player.name,
-            "role": player.role,
-            "race": player.race,
-            "stats": player.stats
-        } for player in team.players]
-    } for team in teams]
+    user = db.query(User).filter(User.id == user_id).first()
+
+    # Check if the user already has a team
+    existing_team = db.query(Team).filter(Team.owner_id == user_id).first()
+    if existing_team:
+        raise HTTPException(status_code=400, detail="User already has a team.")
+
+    new_team = Team(name=team_data.name, race=team_data.race, owner_id=user.id)
+    db.add(new_team)
+    db.commit()
+    db.refresh(new_team)
+
+    return new_team

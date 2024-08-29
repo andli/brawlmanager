@@ -24,15 +24,15 @@ function Dashboard() {
     loadData();
   }, []);
 
+  const handleTeamCreated = (newTeam) => {
+    setTeams([newTeam]);  // Update state with the newly created team
+  };
+
   return (
     <div>
       <h2>Your Dashboard</h2>
       {user && <User user={user} />}
-      {teams.length > 0 ? (
-        teams.map(team => <Team key={team.id} team={team} />)
-      ) : (
-        <p>No teams found.</p>
-      )}
+      <Team team={teams[0]} onTeamCreated={handleTeamCreated} />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-// bm-frontend/src/components/Team.js
 import React from 'react';
 import Player from './Player';
 import CreateTeamForm from './CreateTeamForm';
@@ -20,7 +19,7 @@ function Team({ team, onTeamCreated }) {
       <p>Race: {team.race}</p>
       <div>
         <h4>Players:</h4>
-        {team.players.length > 0 ? (
+        {team.players && team.players.length > 0 ? (
           team.players.map(player => (
             <Player key={player.id} player={player} />
           ))

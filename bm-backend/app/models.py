@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.postgresql import ARRAY
 from app.db import Base
 
 class User(Base):
@@ -7,3 +8,18 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=True)
     picture = Column(String, nullable=True)
+
+class Team(Base):
+    __tablename__ = "teams"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=True)
+    race = Column(String, nullable=True)
+
+class Player(Base):
+    __tablename__ = "players"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=True)
+    role = Column(String, nullable=True)
+    race = Column(String, nullable=True)
+    stats = Column(ARRAY(Integer), nullable=True)
+

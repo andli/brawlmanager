@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse, JSONResponse
-from app.db import database, SessionLocal
-from app.models import User
 from app.dependencies import oauth
+
+from app.db import get_db, SessionLocal
 from sqlalchemy.orm import Session
+
+from app.models import User
 
 router = APIRouter()
 

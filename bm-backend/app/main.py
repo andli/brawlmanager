@@ -31,3 +31,4 @@ async def shutdown():
     await database.disconnect()
 
 app.include_router(auth.router, prefix="/api")
+app.include_router(api.router, prefix="/api")

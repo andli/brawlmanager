@@ -29,7 +29,7 @@ def get_db():
 # Create the tables in the database (only if they don't exist)
 def init_db():
     # Import the models here to ensure they are registered properly before creating the tables
-    from app.models import User  # Import the model(s) here
+    from app.models import User, Team, Player  # Import the model(s) here
     Base.metadata.create_all(bind=engine)
 
 # Call init_db() to ensure the tables are created

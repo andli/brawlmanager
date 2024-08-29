@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
+from app.dependencies import oauth
+
+from app.db import get_db, SessionLocal
 from sqlalchemy.orm import Session
+
 from pydantic import BaseModel
-from app.db import get_db
 from app.models import Team, User
 
 router = APIRouter()
 
-# Define the CreateTeamRequest class here
-class CreateTeamRequest(BaseModel):
-    name: str
-    race: str
 
 @router.get("/user")
 def get_user(db: Session = Depends(get_db)):
@@ -20,12 +19,19 @@ def get_user(db: Session = Depends(get_db)):
 @router.get("/teams")
 def get_teams(db: Session = Depends(get_db)):
     teams = db.query(Team).all()
+    print("list teams " + teams)
     return teams
+
+# Define the CreateTeamRequest class here
+class CreateTeamRequest(BaseModel):
+    name: str
+    race: str
 
 @router.post("/teams")
 def create_team(team_data: CreateTeamRequest, db: Session = Depends(get_db)):
     user_id = 1  # Replace with logic to get the authenticated user's ID
     user = db.query(User).filter(User.id == user_id).first()
+    print("got team" + team_data)
 
     # Check if the user already has a team
     existing_team = db.query(Team).filter(Team.owner_id == user_id).first()
@@ -38,3 +44,4 @@ def create_team(team_data: CreateTeamRequest, db: Session = Depends(get_db)):
     db.refresh(new_team)
 
     return new_team
+

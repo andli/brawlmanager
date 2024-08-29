@@ -15,7 +15,7 @@ function Team({ team, onTeamCreated }) {
 
   return (
     <div>
-      <h3>{team.name}</h3>
+      <h3>Team: {team.name}</h3>
       <p>Race: {team.race}</p>
       <div>
         <h4>Players:</h4>

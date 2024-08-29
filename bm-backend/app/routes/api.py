@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies import oauth
 
 from app.db import get_db, SessionLocal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from pydantic import BaseModel
 from app.models import Team, User
@@ -18,9 +18,10 @@ def get_user(db: Session = Depends(get_db)):
 
 @router.get("/teams")
 def get_teams(db: Session = Depends(get_db)):
-    teams = db.query(Team).all()
+    teams = db.query(Team).options(joinedload(Team.players)).all()
     print("list teams " + str(teams))
     return teams
+
 
 # Define the CreateTeamRequest class here
 class CreateTeamRequest(BaseModel):

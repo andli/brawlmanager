@@ -19,7 +19,7 @@ def get_user(db: Session = Depends(get_db)):
 @router.get("/teams")
 def get_teams(db: Session = Depends(get_db)):
     teams = db.query(Team).all()
-    print("list teams " + teams)
+    print("list teams " + str(teams))
     return teams
 
 # Define the CreateTeamRequest class here
@@ -31,7 +31,7 @@ class CreateTeamRequest(BaseModel):
 def create_team(team_data: CreateTeamRequest, db: Session = Depends(get_db)):
     user_id = 1  # Replace with logic to get the authenticated user's ID
     user = db.query(User).filter(User.id == user_id).first()
-    print("got team" + team_data)
+    print("got team" + str(team_data))
 
     # Check if the user already has a team
     existing_team = db.query(Team).filter(Team.owner_id == user_id).first()

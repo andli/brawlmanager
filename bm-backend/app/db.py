@@ -18,6 +18,14 @@ metadata = MetaData()
 # Base class for ORM models
 Base = declarative_base()
 
+# Dependency for getting the session in FastAPI routes
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 # Create the tables in the database (only if they don't exist)
 def init_db():
     # Import the models here to ensure they are registered properly before creating the tables

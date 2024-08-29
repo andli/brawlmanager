@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Dashboard from './components/Dashboard'; 
+
 
 function Home() {
   /* const handleLogin = async () => {
@@ -25,10 +27,6 @@ function Home() {
       <button onClick={handleLogin}>Login with Google</button>
     </div>
   );
-}
-
-function Dashboard() {
-  return <h2>Your Dashboard</h2>;
 }
 
 function App() {

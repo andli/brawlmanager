@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware 
-from app.routes import auth
+from app.routes import auth, api
 from app.db import database
 
 app = FastAPI()

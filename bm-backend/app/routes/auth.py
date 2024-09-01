@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse, JSONResponse
 from app.dependencies import oauth
@@ -30,25 +31,21 @@ def create_user(db: Session, user_info: dict):
     db.refresh(db_user)
     return db_user
 
+
 @router.get("/auth")
 async def auth(request: Request):
     try:
-        # Log the request parameters
         print(f"Request Query Params: {request.query_params}")
         
-        # Attempt to exchange the authorization code for an access token
+        # Exchange the authorization code for an access token
         token = await oauth.google.authorize_access_token(request)
         print(f"Token received: {token}")
 
         # Access user info from the token
         user_info = token.get('userinfo')
-        if user_info:
-            print(f"User info: {user_info}")
-        else:
-            print("User info not found in token")
+        if not user_info:
             return JSONResponse(status_code=500, content={"message": "User info not found in token response"})
 
-        # Database session
         db = SessionLocal()
 
         # Check if the user already exists
@@ -56,15 +53,45 @@ async def auth(request: Request):
         if not user:
             user = create_user(db, user_info)
 
-        # Use the user object as needed
-        print(f"User retrieved or created: {user}")
-        
+        # Save the refresh token and access token expiry
+        user.refresh_token = token.get('refresh_token')
+        access_token_expiry = datetime.utcnow() + timedelta(seconds=token.get('expires_in'))
+        user.access_token_expiry = access_token_expiry
+
+        db.commit()
+
         return RedirectResponse(url="http://localhost:3000/dashboard")
     
     except ValueError as ve:
-        print(f"ValueError during token exchange: {str(ve)}")
         return JSONResponse(status_code=500, content={"message": "Invalid token response"})
     
     except Exception as e:
-        print(f"General error during token exchange: {str(e)}")
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+
+async def refresh_access_token_if_needed(user: User, db: Session):
+    if datetime.utcnow() >= user.access_token_expiry:
+        # Access token expired, refresh it
+        token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
+        
+        if not token:
+            raise HTTPException(status_code=401, detail="Failed to refresh access token")
+        
+        # Update user's access token and expiry
+        user.access_token_expiry = datetime.utcnow() + timedelta(seconds=token.get('expires_in'))
+        db.commit()
+        return token.get('access_token')
+
+    return None  # Token is still valid
+
+@router.get("/auth/check-session")
+async def check_session(request: Request):
+    user_email = request.user.email  # assuming you have a way to get the current user's email from the session or token
+    db = SessionLocal()
+    user = get_user_by_email(db, user_email)
+    
+    if user:
+        # Attempt to refresh token if needed
+        access_token = await refresh_access_token_if_needed(user, db)
+        return {"message": "Session is valid", "access_token": access_token}
+    
+    raise HTTPException(status_code=401, detail="Invalid session")

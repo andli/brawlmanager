@@ -9,6 +9,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=True)
     picture = Column(String, nullable=True)
+    refresh_token = Column(String, nullable=True)
+    access_token_expiry = Column(DateTime, nullable=True)
 
     teams = relationship("Team", back_populates="owner")
 

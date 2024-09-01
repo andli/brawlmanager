@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; 
+import axios from 'axios';
 
 function App() {
   return (
@@ -12,6 +13,29 @@ function App() {
     </Router>
   );
 }
+
+
+const api = axios.create({
+    baseURL: 'http://localhost:8000/api',
+    withCredentials: true,
+});
+
+// Function to check if the user is logged in
+export const checkUserSession = async () => {
+    try {
+        const response = await api.get('/auth/check-session');
+        if (response.status === 200) {
+            // User is logged in
+            return response.data;
+        } else {
+            // Redirect to login
+            window.location.href = '/auth/login';
+        }
+    } catch (error) {
+        console.error("Error checking user session", error);
+        window.location.href = '/auth/login';
+    }
+};
 
 function Home() {
   const handleLogin = () => {

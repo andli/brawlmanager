@@ -10,7 +10,7 @@ class User(Base):
     name = Column(String, nullable=True)
     picture = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)
-    access_token_expiry = Column(DateTime, nullable=True)
+    access_token_expiry = Column(DateTime(timezone=True), nullable=True)
 
     teams = relationship("Team", back_populates="owner")
 

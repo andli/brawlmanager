@@ -8,18 +8,19 @@ from app.models import Team, User
 router = APIRouter()
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    user_email = request.session.get('user_email')  # or however you are retrieving the email
-    if user_email:
-        user = db.query(User).filter(User.email == user_email).first()
-        if user:
-            print(f"User found: {user.name}")
-            return user
-        else:
-            print("No user found with this email")
-    else:
-        print("No user email in session")
-    raise HTTPException(status_code=401, detail="User not authenticated")
+    user_info = request.session.get('user')  # Retrieve the user dict
+    if not user_info:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    
+    user_email = user_info.get('email')  # Extract the email from the dict
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in session")
 
+    user = db.query(User).filter(User.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    return user
 
 @router.get("/user")
 def get_user(db: Session = Depends(get_db), user: User = Depends(get_current_user)):

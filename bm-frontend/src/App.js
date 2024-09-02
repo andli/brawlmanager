@@ -1,39 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import Home from './components/Home';
-import { checkUserSession } from './api';
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import { checkUserSession, signOut } from "./api";
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const checkSession = async () => {
-            const session = await checkUserSession();
-            if (session) {
-                setIsAuthenticated(true);
-            } else {
-                setIsAuthenticated(false);
-            }
-            setLoading(false);
-        };
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const session = await checkUserSession();
+        setIsAuthenticated(session ? true : false);
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+      setLoading(false);
+    };
 
-        checkSession();
-    }, []);
+    checkSession();
+  }, []);
 
-    if (loading) {
-        return <div>Loading...</div>; // Or a spinner, while the session is being checked
-    }
+  const handleSignOut = async () => {
+    await signOut();
+    setIsAuthenticated(false);
+  };
 
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
-                <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
-            </Routes>
-        </Router>
-    );
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner, while the session is being checked
+  }
+
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />}
+        />
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? (
+              <Dashboard onSignOut={handleSignOut} />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

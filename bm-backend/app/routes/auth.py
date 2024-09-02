@@ -61,6 +61,7 @@ async def auth(request: Request):
 
         # Store the user's email in the session
         request.session['user'] = {'email': user.email}
+        
         print(f"Session after login: {request.session}")
 
         return RedirectResponse(url="http://localhost:3000/dashboard")
@@ -72,42 +73,39 @@ async def auth(request: Request):
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 async def refresh_access_token_if_needed(user: User, db: Session):
-    if datetime.now(timezone.utc) >= user.access_token_expiry:
-        # Access token expired, refresh it
-        token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
+    # if datetime.now(timezone.utc) >= user.access_token_expiry:
+    #     # Access token expired, refresh it
+    #     token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
         
-        if not token:
-            raise HTTPException(status_code=401, detail="Failed to refresh access token")
+    #     if not token:
+    #         raise HTTPException(status_code=401, detail="Failed to refresh access token")
         
-        # Update user's access token and expiry
-        user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
-        db.commit()
-        return token.get('access_token')
+    #     # Update user's access token and expiry
+    #     user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
+    #     db.commit()
+    #     return token.get('access_token')
 
     return None  # Token is still valid
 
 @router.get("/auth/check-session")
 async def check_session(request: Request):
-    user_email = request.session.get('user_email')
-    if not user_email:
+    user_data = request.session.get('user')
+    if not user_data:
         raise HTTPException(status_code=401, detail="User not authenticated")
 
     db = SessionLocal()
-    user = get_user_by_email(db, user_email)
+    user = get_user_by_email(db, user_data['email'])
     
     if user:
-        # Attempt to refresh token if needed
         access_token = await refresh_access_token_if_needed(user, db)
         return {"message": "Session is valid", "access_token": access_token}
     
     raise HTTPException(status_code=401, detail="Invalid session")
 
+
 @router.post("/auth/signout")
 async def sign_out(request: Request, response: Response):
-    # Clear the session cookie
-    response.delete_cookie(key="session")
-    user_id = request.session.get('user_id')  # Assuming user_id is stored in the session
-    if user_id:
-        db.query(SessionModel).filter(SessionModel.user_id == user_id).delete()
-        db.commit()
-    return Response(status_code=204)
+    request.session.clear()  # Clear all session data
+    response.delete_cookie("session")  # Delete the session cookie or token
+    response.status_code = 204
+    return response

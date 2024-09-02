@@ -1,10 +1,9 @@
 // bm-frontend/src/components/Dashboard.js
 import React, { useEffect, useState } from 'react';
-import { fetchUser, fetchTeams } from '../api';  // Assuming you have these API functions defined
+import { fetchUser, fetchTeams, signOut } from '../api';  // Assuming you have these API functions defined
 import User from './User';  // Assuming you have a User component to display user info
 import Team from './Team';  // Assuming you have a Team component to display team info
 import { useNavigate } from 'react-router-dom';
-import { signOut } from '../App';  // Importing signOut function from App.js
 
 function Dashboard() {
   const [user, setUser] = useState(null);

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends, Response
 from starlette.responses import RedirectResponse, JSONResponse
 from app.dependencies import oauth
 
@@ -61,7 +61,8 @@ async def auth(request: Request):
         db.commit()
 
         # Store the user's email in the session
-        request.session['user_email'] = user_info['email']
+        request.session['user'] = {'email': user.email}
+        print(f"Session after login: {request.session}")
 
         return RedirectResponse(url="http://localhost:3000/dashboard")
     

@@ -14,13 +14,18 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "tailwindcss": "^3.0.0",
+    "postcss": "^8.3.6",
+    "autoprefixer": "^10.3.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.14.5"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "npm run build-css",
+    "build-css": "tailwindcss -o src/index.css"
   },
   "proxy": "http://bm-backend:8000",
   "eslintConfig": {

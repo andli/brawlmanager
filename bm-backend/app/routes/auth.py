@@ -73,17 +73,19 @@ async def auth(request: Request):
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 async def refresh_access_token_if_needed(user: User, db: Session):
-    # if datetime.now(timezone.utc) >= user.access_token_expiry:
-    #     # Access token expired, refresh it
-    #     token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
+    print("Refreshing access token if needed...")
+    if datetime.now(timezone.utc) >= user.access_token_expiry:
+        # Access token expired, refresh it
+        token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
         
-    #     if not token:
-    #         raise HTTPException(status_code=401, detail="Failed to refresh access token")
+        if not token:
+            raise HTTPException(status_code=401, detail="Failed to refresh access token")
+        print("Got token!")
         
-    #     # Update user's access token and expiry
-    #     user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
-    #     db.commit()
-    #     return token.get('access_token')
+        # Update user's access token and expiry
+        user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
+        db.commit()
+        return token.get('access_token')
 
     return None  # Token is still valid
 

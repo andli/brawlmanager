@@ -11,7 +11,7 @@ function Home() {
             <p className="text-lg mb-6 text-center text-gray-600">Login with your Google account to get started.</p>
             <button 
                 onClick={handleLogin} 
-                class="confirm_button"
+                className="confirm_button"
             >
                 Login with Google
             </button>

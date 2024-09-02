@@ -42,7 +42,7 @@ function Dashboard() {
       <h2>Your Dashboard</h2>
       {user && <User user={user} />}
       {teams.length > 0 && <Team team={teams[0]} onTeamCreated={handleTeamCreated} />}
-      <button onClick={handleSignOut}>Sign Out</button>  {/* Sign out button */}
+      <button onClick={handleSignOut} class="confirm_button">Sign Out</button>  {/* Sign out button */}
     </div>
   );
 }

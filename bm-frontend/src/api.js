@@ -31,7 +31,16 @@ export const fetchTeams = async () => {
 export const signOut = async () => {
     try {
         await api.post('/auth/signout');
-        // You can clear any additional client-side state here if necessary
+        // Clear client-side state or local storage
+        localStorage.removeItem('user'); // If you store user info in local storage
+        sessionStorage.removeItem('user'); // If you use session storage
+
+        // If you're using a state management library like Redux or Zustand
+        // dispatch({ type: 'LOGOUT' });
+
+        // Optionally, redirect to a different page
+        window.location.href = '/'; // or another appropriate URL
+
         return true;
     } catch (error) {
         console.error("Error signing out", error);

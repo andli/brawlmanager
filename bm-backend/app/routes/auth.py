@@ -17,8 +17,7 @@ async def login(request: Request):
     
     # Initiate the OAuth flow by redirecting to Google's OAuth endpoint
     # `authorize_redirect` will handle state generation internally
-    return await oauth.google.authorize_redirect(request, redirect_uri)
-
+    return await oauth.google.authorize_redirect(request, redirect_uri, access_type="offline")
 
 
 def get_user_by_email(db: Session, email: str):
@@ -104,7 +103,11 @@ async def check_session(request: Request):
     raise HTTPException(status_code=401, detail="Invalid session")
 
 @router.post("/auth/signout")
-async def sign_out(response: Response):
+async def sign_out(request: Request, response: Response):
     # Clear the session cookie
     response.delete_cookie(key="session")
-    return Response(status_code=HTTP_204_NO_CONTENT)
+    user_id = request.session.get('user_id')  # Assuming user_id is stored in the session
+    if user_id:
+        db.query(SessionModel).filter(SessionModel.user_id == user_id).delete()
+        db.commit()
+    return Response(status_code=204)

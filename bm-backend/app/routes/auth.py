@@ -101,3 +101,9 @@ async def check_session(request: Request):
         return {"message": "Session is valid", "access_token": access_token}
     
     raise HTTPException(status_code=401, detail="Invalid session")
+
+@router.post("/auth/signout")
+async def sign_out(response: Response):
+    # Clear the session cookie
+    response.delete_cookie(key="session")
+    return Response(status_code=HTTP_204_NO_CONTENT)

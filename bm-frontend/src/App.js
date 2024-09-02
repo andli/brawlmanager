@@ -28,6 +28,17 @@ export const checkUserSession = async () => {
     }
 };
 
+export const signOut = async () => {
+    try {
+        await api.post('/auth/signout');
+        // You can clear any additional client-side state here if necessary
+        return true;
+    } catch (error) {
+        console.error("Error signing out", error);
+        return false;
+    }
+};
+
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);

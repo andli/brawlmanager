@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from fastapi import APIRouter, Request
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, Request, HTTPException
 from starlette.responses import RedirectResponse, JSONResponse
 from app.dependencies import oauth
 
@@ -60,6 +60,9 @@ async def auth(request: Request):
 
         db.commit()
 
+        # Store the user's email in the session
+        request.session['user_email'] = user_info['email']
+
         return RedirectResponse(url="http://localhost:3000/dashboard")
     
     except ValueError as ve:
@@ -69,7 +72,7 @@ async def auth(request: Request):
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 async def refresh_access_token_if_needed(user: User, db: Session):
-    if datetime.utcnow() >= user.access_token_expiry:
+    if datetime.now(timezone.utc) >= user.access_token_expiry:
         # Access token expired, refresh it
         token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
         
@@ -77,7 +80,7 @@ async def refresh_access_token_if_needed(user: User, db: Session):
             raise HTTPException(status_code=401, detail="Failed to refresh access token")
         
         # Update user's access token and expiry
-        user.access_token_expiry = datetime.utcnow() + timedelta(seconds=token.get('expires_in'))
+        user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
         db.commit()
         return token.get('access_token')
 
@@ -85,7 +88,10 @@ async def refresh_access_token_if_needed(user: User, db: Session):
 
 @router.get("/auth/check-session")
 async def check_session(request: Request):
-    user_email = request.user.email  # assuming you have a way to get the current user's email from the session or token
+    user_email = request.session.get('user_email')
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
     db = SessionLocal()
     user = get_user_by_email(db, user_email)
     

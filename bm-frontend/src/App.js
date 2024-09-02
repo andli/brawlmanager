@@ -1,20 +1,10 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Dashboard from './components/Dashboard'; 
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Dashboard from './components/Dashboard';
+import Home from './components/Home';
 import axios from 'axios';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
-  );
-}
-
-
+// Axios instance for API calls
 const api = axios.create({
     baseURL: 'http://localhost:8000/api',
     withCredentials: true,
@@ -25,30 +15,49 @@ export const checkUserSession = async () => {
     try {
         const response = await api.get('/auth/check-session');
         if (response.status === 200) {
-            // User is logged in
             return response.data;
-        } else {
-            // Redirect to login
-            window.location.href = '/auth/login';
         }
     } catch (error) {
         console.error("Error checking user session", error);
-        window.location.href = '/auth/login';
+        if (error.response && error.response.status === 401) {
+            // User is not authenticated
+            return null;
+        }
+        // Other error cases
+        return null;
     }
 };
 
-function Home() {
-  const handleLogin = () => {
-  window.location.href = "http://localhost:8000/api/auth/login";
-};
+function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-  return (
-    <div>
-      <h1>Welcome to BrawlManager</h1>
-      <p>Login with your Google account to get started.</p>
-      <button onClick={handleLogin}>Login with Google</button>
-    </div>
-  );
+    useEffect(() => {
+        const checkSession = async () => {
+            const session = await checkUserSession();
+            if (session) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
+            }
+            setLoading(false);
+        };
+
+        checkSession();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>; // Or a spinner, while the session is being checked
+    }
+
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
+                <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

@@ -11,7 +11,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "serve": "^14.0.1"
   },
   "devDependencies": {
     "tailwindcss": "^3.0.0",
@@ -26,7 +27,7 @@
     "eject": "react-scripts eject",
     "postinstall": "npm run build-css",
     "build-css": "tailwindcss -o src/index.css",
-    "serve": "serve -s build" 
+    "serve": "serve -s build"
   },
   "proxy": "http://bm-backend:8000",
   "eslintConfig": {

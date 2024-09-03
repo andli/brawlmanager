@@ -34,6 +34,11 @@ def get_teams(current_user: User = Depends(get_current_user), db: Session = Depe
     teams = db.query(Team).filter(Team.owner_id == current_user.id).options(joinedload(Team.players)).all()
     return teams
 
+@router.get("/allteams")
+def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    teams = db.query(Team).all()
+    return teams
+
 # Define the CreateTeamRequest class here
 class CreateTeamRequest(BaseModel):
     name: str

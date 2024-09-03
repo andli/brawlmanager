@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { checkUserSession } from "../api";
+import { api, checkUserSession } from "../api";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function Login() {
   }, [navigate]);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/login"; // Redirect to backend's OAuth login
+    window.location.href = `${api.defaults.baseURL}/auth/login`;
   };
 
   return (

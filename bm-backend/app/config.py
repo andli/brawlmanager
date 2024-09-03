@@ -10,5 +10,6 @@ class Settings:
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     GOOGLE_REDIRECT_URI: str = os.getenv("GOOGLE_REDIRECT_URI")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL")
 
 settings = Settings()

@@ -12,5 +12,8 @@ COPY ./ /app/
 
 RUN npm run build
 
+# The EXPOSE instruction is optional and is mostly for documentation purposes.
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Use the PORT environment variable if it exists, or default to 3000
+CMD ["sh", "-c", "serve -s build -l ${PORT:-3000}"]

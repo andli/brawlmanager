@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Request, HTTPException, Depends, Response
 from starlette.responses import RedirectResponse, JSONResponse
 from app.dependencies import oauth
+from app.config import settings
 
 from app.db import get_db, SessionLocal
 from sqlalchemy.orm import Session
@@ -64,7 +65,9 @@ async def auth(request: Request):
         
         print(f"Session after login: {request.session}")
 
-        return RedirectResponse(url="http://localhost:3000/dashboard")
+        frontend_url = settings.FRONTEND_URL
+
+        return RedirectResponse(url=f"{frontend_url}/dashboard")
     
     except ValueError as ve:
         return JSONResponse(status_code=500, content={"message": "Invalid token response"})

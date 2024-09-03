@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, checkUserSession } from "../api";
+import api, { checkUserSession } from "../api";
 
 function Login() {
   const navigate = useNavigate();

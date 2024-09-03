@@ -6,6 +6,8 @@ const api = axios.create({
     withCredentials: true,
 });
 
+export default api;
+
 // Fetch the authenticated user's data
 export const fetchUser = async () => {
   try {

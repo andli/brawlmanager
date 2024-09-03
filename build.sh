@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build the backend Docker image
-docker build -t gcr.io/brawlmanager/brawlmanager-backend ./bm-backend
+docker build -t gcr.io/brawlmanager/brawlmanager-backend -f bm-backend/Dockerfile .
 
 # Build the frontend Docker image
-docker build -t gcr.io/brawlmanager/brawlmanager-frontend ./bm-frontend
+docker build -t gcr.io/brawlmanager/brawlmanager-frontend -f bm-frontend/Dockerfile bm-frontend

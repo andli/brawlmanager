@@ -7,8 +7,8 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /app
-#COPY bm-backend/. /app
+COPY bm-backend/. /app
+COPY .env* /app
 
 # Accept a build argument `ENV`
 ARG ENV=local

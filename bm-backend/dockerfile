@@ -7,22 +7,14 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY bm-backend/. /app
-COPY .env /app
-COPY .env.local /app
-
-# Accept a build argument `ENV`
-ARG ENV=local
-
-# Conditionally copy the .env file based on the ENV argument
-RUN if [ "$ENV" = "local" ] ; then cp .env.local .env ; else cp .env .env ; fi
-RUN cat .env  # This will show the contents during build for debugging
+COPY . /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
-EXPOSE 8000
+ENV PORT=8000
+EXPOSE 8080
 
 # Run the application
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT

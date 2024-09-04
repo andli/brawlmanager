@@ -1,17 +1,25 @@
 services:
   bm-backend:
+    image: gcr.io/brawlmanager/brawlmanager-backend
     build:
-      context: .
-      dockerfile: bm-backend/Dockerfile
-      args:
-        ENV: ${ENV:-local}  # Use ENV variable or default to 'local'
+      context: ./bm-backend
+      dockerfile: Dockerfile
+    env_file: .env.local
+    environment:
+      - PORT=8000
     ports:
       - "8000:8000"
     depends_on:
       - db
 
   bm-frontend:
-    build: ./bm-frontend
+    image: gcr.io/brawlmanager/brawlmanager-frontend
+    build:
+      context: ./bm-frontend
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3000
+    env_file: .env.local
     ports:
       - "3000:3000"
 
@@ -24,7 +32,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432" 
+      - "5432:5432"
 
 volumes:
   postgres_data:

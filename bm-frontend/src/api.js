@@ -11,7 +11,7 @@ export default api;
 // Fetch the authenticated user's data
 export const fetchUser = async () => {
   try {
-    const response = await axios.get("/api/user");
+    const response = await api.get("/user");
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user:", error);
@@ -22,7 +22,7 @@ export const fetchUser = async () => {
 // Fetch the user's teams and players
 export const fetchTeams = async () => {
   try {
-    const response = await axios.get("/api/teams");
+    const response = await api.get("/teams");
     return response.data;
   } catch (error) {
     console.error("Failed to fetch teams:", error);

@@ -4,7 +4,7 @@ services:
     build:
       context: ./bm-backend
       dockerfile: Dockerfile
-    env_file: .env.local
+    env_file: .env
     environment:
       - PORT=8000
     ports:
@@ -17,9 +17,11 @@ services:
     build:
       context: ./bm-frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL
     environment:
       - PORT=3000
-    env_file: .env.local
+    env_file: .env
     ports:
       - "3000:3000"
 

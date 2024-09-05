@@ -8,15 +8,23 @@ COPY package.json /app/
 COPY package-lock.json /app/
 RUN npm install
 
-COPY . /app/
+# Define build argument
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 
-RUN npm run build
-# Install 'serve' globally
-RUN npm install -g serve
+# Add a step to print the value of REACT_APP_API_URL for debugging
+RUN echo "REACT_APP_API_URL during build: $REACT_APP_API_URL"
 
 # Expose the port the app runs on
 ENV PORT=3000
 EXPOSE 8080
+
+COPY . /app/
+
+# Build after all envs are set!
+RUN npm run build
+# Install 'serve' globally
+RUN npm install -g serve
 
 # Use the PORT environment variable if it exists
 CMD ["sh", "-c", "serve -s build -l ${PORT}"]

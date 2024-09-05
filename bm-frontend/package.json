@@ -29,7 +29,6 @@
     "build-css": "tailwindcss -o src/index.css",
     "serve": "serve -s build"
   },
-  "proxy": "http://bm-backend:8000",
   "eslintConfig": {
     "extends": [
       "react-app",

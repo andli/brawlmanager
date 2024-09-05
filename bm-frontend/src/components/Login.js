@@ -21,8 +21,8 @@ function Login() {
   }, [navigate]);
 
   const handleLogin = () => {
-    console.log(`${api.defaults.baseURL}/auth/login`);
-    window.location.href = `${api.defaults.baseURL}/auth/login`;
+    console.log(`${api.defaults.baseURL}/api/auth/login`);
+    window.location.href = `${api.defaults.baseURL}/api/auth/login`;
   };
 
   return (

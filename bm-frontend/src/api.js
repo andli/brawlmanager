@@ -11,7 +11,7 @@ export default api;
 // Fetch the authenticated user's data
 export const fetchUser = async () => {
   try {
-    const response = await api.get("/user");
+    const response = await api.get("/api/user");
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user:", error);
@@ -22,7 +22,7 @@ export const fetchUser = async () => {
 // Fetch the user's teams and players
 export const fetchTeams = async () => {
   try {
-    const response = await api.get("/teams");
+    const response = await api.get("/api/teams");
     return response.data;
   } catch (error) {
     console.error("Failed to fetch teams:", error);
@@ -32,7 +32,7 @@ export const fetchTeams = async () => {
 
 export const signOut = async () => {
   try {
-    await api.post("/auth/signout");
+    await api.post("/api/auth/signout");
     // Clear client-side state or local storage
     localStorage.removeItem("user"); // If you store user info in local storage
     sessionStorage.removeItem("user"); // If you use session storage
@@ -54,7 +54,7 @@ export const signOut = async () => {
 export const checkUserSession = async () => {
   console.log("baseURL:", process.env.REACT_APP_API_URL);
   try {
-    const response = await api.get("/auth/check-session");
+    const response = await api.get("/api/auth/check-session");
     if (response.status === 200) {
       return response.data;
     }

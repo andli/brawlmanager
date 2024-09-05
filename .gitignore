@@ -18,8 +18,8 @@ docker-compose.override.yml
 *.log
 .dockerignore
 .env
-.env.local
 *.env
+.env*
 
 # OS Files
 .DS_Store

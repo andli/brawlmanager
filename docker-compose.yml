@@ -16,12 +16,15 @@ services:
     image: gcr.io/brawlmanager/brawlmanager-frontend
     build:
       context: ./bm-frontend
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.prod
       args:
         - REACT_APP_API_URL
     environment:
       - PORT=3000
     env_file: .env
+    volumes:
+      - ./bm-frontend:/app
+      - /app/node_modules # Ensures node_modules don't get overwritten by the host
     ports:
       - "3000:3000"
 

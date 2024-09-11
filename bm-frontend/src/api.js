@@ -30,15 +30,13 @@ export const fetchTeams = async () => {
   }
 };
 
+// Sign out the user
 export const signOut = async () => {
   try {
     await api.post("/api/auth/signout");
     // Clear client-side state or local storage
     localStorage.removeItem("user"); // If you store user info in local storage
     sessionStorage.removeItem("user"); // If you use session storage
-
-    // If you're using a state management library like Redux or Zustand
-    // dispatch({ type: 'LOGOUT' });
 
     // Optionally, redirect to a different page
     window.location.href = "/"; // or another appropriate URL
@@ -66,5 +64,27 @@ export const checkUserSession = async () => {
     }
     // Other error cases
     return null;
+  }
+};
+
+// Create a new team
+export const createTeam = async (teamData) => {
+  try {
+    const response = await api.post("/api/teams", teamData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create team:", error);
+    throw error;
+  }
+};
+
+// Create a new player
+export const createPlayer = async (playerData) => {
+  try {
+    const response = await api.post("/api/players", playerData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create player:", error);
+    throw error;
   }
 };

@@ -37,6 +37,8 @@ function App() {
     return <div>Loading...</div>; // Or a spinner, while the session is being checked
   }
 
+  console.log("TESTTESTTEST");
+
   return (
     <Router>
       <Routes>

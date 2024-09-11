@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchUser, fetchTeams } from "../api";
+import { fetchUser, fetchTeams, createTeam, createPlayer } from "../api";
 import User from "./User";
 import Team from "./Team";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ function Dashboard({ onSignOut }) {
   const [teams, setTeams] = useState([]);
   const navigate = useNavigate();
 
+  // Load user and teams data when component mounts
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -25,10 +26,55 @@ function Dashboard({ onSignOut }) {
     loadData();
   }, []);
 
+  // Function to reload the teams data
+  const reloadTeams = async () => {
+    try {
+      const updatedTeams = await fetchTeams();
+      setTeams(updatedTeams);
+    } catch (error) {
+      console.error("Error reloading teams:", error);
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    try {
+      const teamData = {
+        name: "New Team",
+        race: "Dwarfs",
+        owner_id: user.id,
+      };
+      const newTeam = await createTeam(teamData);
+      setTeams((prevTeams) => [...prevTeams, newTeam]);
+    } catch (error) {
+      console.error("Error creating team:", error);
+    }
+  };
+
+  const handleCreatePlayer = async () => {
+    try {
+      const playerData = {
+        name: "Test Testson",
+        role: "Runner",
+        race: "Dwarf",
+        stats: [8, 5, 5, 7, 2, 9],
+        team_id: 1, // Hardcoded for now
+      };
+
+      const newPlayer = await createPlayer(playerData);
+      console.log("Player created:", newPlayer);
+
+      // After the player is created, reload the team data to reflect the changes
+      await reloadTeams();
+    } catch (error) {
+      console.error("Error creating player:", error);
+    }
+  };
+
   const handleTeamCreated = (newTeam) => {
     setTeams([newTeam]);
   };
 
+  // Handle sign out logic
   const handleSignOut = async () => {
     await onSignOut();
     navigate("/login");
@@ -41,6 +87,12 @@ function Dashboard({ onSignOut }) {
       {teams.length > 0 && (
         <Team team={teams[0]} onTeamCreated={handleTeamCreated} />
       )}
+      <button onClick={handleCreateTeam} className="confirm_button">
+        Create Team
+      </button>
+      <button onClick={handleCreatePlayer} className="confirm_button">
+        Create Player
+      </button>
       <button onClick={handleSignOut} className="confirm_button">
         Sign Out
       </button>

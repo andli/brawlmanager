@@ -22,9 +22,9 @@ services:
     environment:
       - PORT=3000
     env_file: .env
-    volumes:
-      - ./bm-frontend:/app
-      - /app/node_modules # Ensures node_modules don't get overwritten by the host
+    #volumes:
+    #  - ./bm-frontend:/app
+    #  - /app/node_modules # Ensures node_modules don't get overwritten by the host
     ports:
       - "3000:3000"
 

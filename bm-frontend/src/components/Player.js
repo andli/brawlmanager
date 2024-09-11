@@ -3,16 +3,16 @@ import React from "react";
 
 function Player({ player }) {
   return (
-    <div class="border-4 border-gray-700 p-5 w-80">
+    <div class="p-5 w-80">
       <h4 class="text-lg font-bold text-brown-700">{player.name}</h4>
-      <p>
-        <strong>Role:</strong> {player.role}
-      </p>
-      <p>
-        <strong>Race:</strong> {player.race}
-      </p>
+      <div class="md:block">
+        <div class="mr-10 flex items-baseline space-x-4">
+          <p class="rounded-md text-md font-medium">{player.race}</p>
+          <p class="rounded-md text-md font-medium">{player.role}</p>
+        </div>
+      </div>
 
-      <table class="table-auto w-full border-collapse mt-4">
+      <table class="table-auto w-full border-collapse text-sm">
         <thead>
           <tr class="">
             <th class="border border-gray-700 px-4 py-2">MA</th>

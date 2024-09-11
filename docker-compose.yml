@@ -1,5 +1,7 @@
 services:
+  # Backend Service - Production
   bm-backend:
+    profiles: ["prod"]
     image: gcr.io/brawlmanager/brawlmanager-backend
     build:
       context: ./bm-backend
@@ -12,7 +14,26 @@ services:
     depends_on:
       - db
 
+  # Backend Service - Development
+  bm-backend-dev:
+    profiles: ["dev"]
+    image: gcr.io/brawlmanager/brawlmanager-backend-dev
+    build:
+      context: ./bm-backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./bm-backend:/app
+    depends_on:
+      - db
+
+  # Frontend Service - Production
   bm-frontend:
+    profiles: ["prod"]
     image: gcr.io/brawlmanager/brawlmanager-frontend
     build:
       context: ./bm-frontend
@@ -22,12 +43,28 @@ services:
     environment:
       - PORT=3000
     env_file: .env
-    #volumes:
-    #  - ./bm-frontend:/app
-    #  - /app/node_modules # Ensures node_modules don't get overwritten by the host
     ports:
       - "3000:3000"
 
+  # Frontend Service - Development
+  bm-frontend-dev:
+    profiles: ["dev"]
+    image: gcr.io/brawlmanager/brawlmanager-frontend-dev
+    build:
+      context: ./bm-frontend
+      dockerfile: dockerfile.dev
+      args:
+        - REACT_APP_API_URL
+    environment:
+      - PORT=3000
+    env_file: .env
+    volumes:
+      - ./bm-frontend:/app
+      - /app/node_modules # Ensures node_modules don't get overwritten by the host
+    ports:
+      - "3000:3000"
+
+  # Database Service
   db:
     image: postgres:13
     environment:

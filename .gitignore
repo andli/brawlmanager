@@ -12,6 +12,13 @@ bm-backend/venv/
 bm-backend/.pytest_cache/
 bm-backend/.mypy_cache/
 bm-backend/.DS_Store
+bm-backend/app/__pycache__/
+bm-backend/app/routes/__pycache__/
+bm-backend/app/.env
+bm-backend/app/venv/
+bm-backend/app/.pytest_cache/
+bm-backend/app/.mypy_cache/
+bm-backend/app/.DS_Store
 
 # Docker
 docker-compose.override.yml

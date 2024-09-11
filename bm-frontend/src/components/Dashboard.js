@@ -50,6 +50,20 @@ function Dashboard({ onSignOut }) {
     }
   };
 
+  const getTeamByUser = async () => {
+    try {
+      const teamsData = await fetchTeams();
+      if (teamsData.length > 0) {
+        return teamsData[0].id; // Return the ID of the user's only team
+      } else {
+        throw new Error("No team found for the current user.");
+      }
+    } catch (error) {
+      console.error("Error fetching team by user:", error);
+      throw error;
+    }
+  };
+
   const handleCreatePlayer = async () => {
     try {
       const playerData = {
@@ -57,7 +71,7 @@ function Dashboard({ onSignOut }) {
         role: "Runner",
         race: "Dwarf",
         stats: [8, 5, 5, 7, 2, 9],
-        team_id: 1, // Hardcoded for now
+        team_id: await getTeamByUser(), // Get the team ID dynamically
       };
 
       const newPlayer = await createPlayer(playerData);

@@ -12,7 +12,7 @@ function Player({ player }) {
         </div>
       </div>
 
-      <table class="table-auto w-full border-collapse text-sm">
+      <table class="table-auto w-full border-collapse text-xs">
         <thead>
           <tr class="">
             <th class="border border-gray-700 px-4 py-2">MA</th>

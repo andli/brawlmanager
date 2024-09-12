@@ -88,12 +88,6 @@ function Dashboard({ onSignOut }) {
     setTeams([newTeam]);
   };
 
-  // Handle sign out logic
-  const handleSignOut = async () => {
-    await onSignOut();
-    navigate("/login");
-  };
-
   return (
     <div>
       <h2>Your Dashboard</h2>
@@ -106,9 +100,6 @@ function Dashboard({ onSignOut }) {
       </button>
       <button onClick={handleCreatePlayer} className="confirm_button">
         Create Player
-      </button>
-      <button onClick={handleSignOut} className="confirm_button">
-        Sign Out
       </button>
     </div>
   );

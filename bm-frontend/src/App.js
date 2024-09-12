@@ -8,6 +8,7 @@ import {
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import Navbar from "./components/Navbar"; // Import the Navbar component
 import { checkUserSession, signOut } from "./api";
 
 function App() {
@@ -28,34 +29,40 @@ function App() {
     checkSession();
   }, []);
 
-  const handleSignOut = async () => {
-    await signOut();
-    setIsAuthenticated(false);
-  };
-
   if (loading) {
     return <div>Loading...</div>; // Or a spinner, while the session is being checked
   }
 
+  // Handle sign out logic
+  const handleSignOut = async () => {
+    await signOut();
+    setIsAuthenticated(false);
+    Navigate("/login");
+  };
+
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />}
-        />
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <Dashboard onSignOut={handleSignOut} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <div className="min-h-screen flex flex-col">
+        {/* Navbar */}
+        <Navbar isAuthenticated={isAuthenticated} onSignOut={handleSignOut} />
+
+        {/* Main Content */}
+        <div className="flex-grow p-5">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? <Navigate to="/dashboard" /> : <Home />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+            />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

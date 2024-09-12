@@ -26,8 +26,7 @@ function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="p-5">
       <button
         onClick={handleLogin}
         className="bg-blue-500 text-white font-bold py-2 px-4 rounded"

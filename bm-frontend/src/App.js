@@ -8,6 +8,7 @@ import {
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import Profile from "./components/Profile"; // Import the Profile component
 import Navbar from "./components/Navbar"; // Import the Navbar component
 import { checkUserSession, signOut } from "./api";
 
@@ -58,7 +59,23 @@ function App() {
             />
             <Route
               path="/dashboard"
-              element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+              element={
+                isAuthenticated ? (
+                  <Dashboard onSignOut={handleSignOut} />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                isAuthenticated ? (
+                  <Profile onSignOut={handleSignOut} />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
             />
             <Route path="/login" element={<Login />} />
           </Routes>

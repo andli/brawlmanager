@@ -30,7 +30,7 @@ button {
 }
 
 .confirm_button {
-  @apply bg-blue-600 text-white mr-2 px-4 py-2 rounded-lg hover:bg-blue-700;
+  @apply bg-green-800 text-white mr-2 px-4 py-2 rounded-lg hover:bg-green-700;
 }
 
 .cancel_button {

@@ -16,10 +16,10 @@ async def login(request: Request):
     # Dynamically generate the redirect URI for the OAuth flow
     redirect_uri = request.url_for('auth')
     
-    # Initiate the OAuth flow by redirecting to Google's OAuth endpoint
-    # `authorize_redirect` will handle state generation internally
-    return await oauth.google.authorize_redirect(request, redirect_uri, access_type="offline")
-
+    # Initiate the OAuth flow with access_type=offline and prompt=consent to force a refresh token to be returned
+    return await oauth.google.authorize_redirect(
+        request, redirect_uri, access_type="offline", prompt="consent"
+    )
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
@@ -35,11 +35,9 @@ def create_user(db: Session, user_info: dict):
 @router.get("/auth")
 async def auth(request: Request):
     try:
-        print(f"Request Query Params: {request.query_params}")
-        
         # Exchange the authorization code for an access token
         token = await oauth.google.authorize_access_token(request)
-        print(f"Token received: {token}")
+        print(f"Token received: {token}")  # Log the full token response
 
         # Access user info from the token
         user_info = token.get('userinfo')
@@ -55,12 +53,12 @@ async def auth(request: Request):
 
         # Save the refresh token and access token expiry
         refresh_token = token.get('refresh_token')
-        if not refresh_token:
-            print(f"Refresh token is missing for user {user.email}")
-            # You can decide whether to raise an error here or proceed, depending on your use case
-            # return JSONResponse(status_code=500, content={"message": "Refresh token is missing"})
+        if refresh_token:
+            user.refresh_token = refresh_token
+            print(f"Refresh token saved for user: {user.email}")
+        else:
+            print("No refresh token received from Google")
 
-        user.refresh_token = refresh_token
         access_token_expiry = datetime.utcnow() + timedelta(seconds=token.get('expires_in'))
         user.access_token_expiry = access_token_expiry
 
@@ -70,17 +68,12 @@ async def auth(request: Request):
         request.session['user'] = {'email': user.email}
         
         print(f"Session after login: {request.session}")
-
         frontend_url = settings.FRONTEND_URL
 
         return RedirectResponse(url=f"{frontend_url}/dashboard")
     
-    except ValueError as ve:
-        print(f"ValueError during OAuth process: {ve}")
-        return JSONResponse(status_code=500, content={"message": "Invalid token response"})
-    
     except Exception as e:
-        print(f"Exception during OAuth process: {e}")
+        print(f"Error during OAuth process: {e}")
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 async def refresh_access_token_if_needed(user: User, db: Session):

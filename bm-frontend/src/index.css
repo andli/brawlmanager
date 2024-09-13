@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apply Averia Regular font to all heading classes */
+@layer components {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply averia-serif-libre-regular;
+  }
+}
+
+.logotext {
+  @apply bowlby-one-sc-regular;
+}
+
 /* Buttons */
 .confirm_button {
   @apply bg-blue-600 text-white mr-2 px-4 py-2 rounded-lg hover:bg-blue-700;
@@ -90,4 +106,53 @@ button {
 
 label {
   @apply block text-sm font-medium text-gray-700;
+}
+
+/* FONTS */
+.averia-serif-libre-light {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.averia-serif-libre-regular {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.averia-serif-libre-bold {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.averia-serif-libre-light-italic {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.averia-serif-libre-regular-italic {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.averia-serif-libre-bold-italic {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.bowlby-one-sc-regular {
+  font-family: "Bowlby One SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.road-rage-regular {
+  font-family: "Road Rage", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }

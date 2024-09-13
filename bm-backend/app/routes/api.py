@@ -36,16 +36,26 @@ def get_teams(current_user: User = Depends(get_current_user), db: Session = Depe
     teams = db.query(Team).filter(Team.owner_id == current_user.id).options(joinedload(Team.players)).all()
     return teams
 
+from sqlalchemy import func, case
+
 @router.get("/allteams")
 def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Subquery to count wins for each team
+    # Subquery to count wins for both home and away teams
     win_count_subquery = (
         db.query(
             Team.id.label("team_id"),
-            func.count(case((MatchResult.home_score > MatchResult.away_score, 1))).label("home_wins"),
-            func.count(case((MatchResult.away_score > MatchResult.home_score, 1))).label("away_wins"),
+            func.count(
+                case(
+                    (MatchResult.home_team_id == Team.id, MatchResult.home_score > MatchResult.away_score)
+                )
+            ).label("home_wins"),
+            func.count(
+                case(
+                    (MatchResult.away_team_id == Team.id, MatchResult.away_score > MatchResult.home_score)
+                )
+            ).label("away_wins")
         )
-        .outerjoin(MatchResult, MatchResult.home_team_id == Team.id)
+        .outerjoin(MatchResult, (MatchResult.home_team_id == Team.id) | (MatchResult.away_team_id == Team.id))
         .group_by(Team.id)
         .subquery()
     )
@@ -76,12 +86,9 @@ def get_teams(current_user: User = Depends(get_current_user), db: Session = Depe
             "total_wins": team.total_wins
         })
 
-    # Sort the result by total_wins in descending order before returning
-    sorted_result = sorted(result, key=lambda x: x["total_wins"], reverse=True)
-
     # Return the sorted result using FastAPI's jsonable_encoder to ensure proper encoding
-    return jsonable_encoder(sorted_result)
-
+    return jsonable_encoder(sorted(result, key=lambda x: x["total_wins"], reverse=True))
+                                                           
 # Define the CreateTeamRequest class here
 class CreateTeamRequest(BaseModel):
     name: str

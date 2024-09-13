@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply besley-normal;
+    @apply bg-amber-50 besley-normal;
   }
 }
 
@@ -22,6 +22,8 @@
 
 .logotext {
   @apply bowlby-one-sc-regular;
+  color: blue; /* The text color */
+  -webkit-text-stroke: 1.5px #fff; /* The stroke thickness and color */
 }
 
 /* Buttons */
@@ -104,6 +106,9 @@ th {
 
 tr:nth-child(even) {
   @apply bg-gray-50;
+}
+tr:nth-child(odd) {
+  @apply bg-white;
 }
 
 /* Forms */

@@ -30,6 +30,17 @@ export const fetchTeams = async () => {
   }
 };
 
+// Fetch all teams and players
+export const fetchAllTeams = async () => {
+  try {
+    const response = await api.get("/api/allteams");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch teams:", error);
+    throw error;
+  }
+};
+
 // Sign out the user
 export const signOut = async () => {
   try {

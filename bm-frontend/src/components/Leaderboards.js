@@ -1,6 +1,6 @@
 // Leaderboards.js
 import React, { useEffect, useState } from "react";
-import { fetchTeams } from "../api"; // Import the fetchTeams function
+import { fetchAllTeams } from "../api"; // Import the fetchTeams function
 
 function Leaderboards({ onSignOut }) {
   const [teams, setTeams] = useState([]);
@@ -11,7 +11,7 @@ function Leaderboards({ onSignOut }) {
   useEffect(() => {
     const loadTeamsData = async () => {
       try {
-        const teamsData = await fetchTeams();
+        const teamsData = await fetchAllTeams();
         setTeams(teamsData);
         setLoading(false); // Data loaded, stop loading
       } catch (error) {

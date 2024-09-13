@@ -18,7 +18,7 @@ async def login(request: Request):
     
     # Initiate the OAuth flow with access_type=offline and prompt=consent to force a refresh token to be returned
     return await oauth.google.authorize_redirect(
-        request, redirect_uri, access_type="offline", prompt="consent"
+        request, redirect_uri, access_type="offline"#, prompt="consent"
     )
 
 def get_user_by_email(db: Session, email: str):

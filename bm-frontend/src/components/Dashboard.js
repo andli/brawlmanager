@@ -86,7 +86,6 @@ function Dashboard({ onSignOut }) {
 
   return (
     <div>
-      <h2>Dashboard</h2>
       {teams.length > 0 && (
         <Team team={teams[0]} onTeamCreated={handleTeamCreated} />
       )}

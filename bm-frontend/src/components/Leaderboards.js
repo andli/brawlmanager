@@ -43,6 +43,9 @@ function Leaderboards({ onSignOut }) {
             <tr className="border border-gray-500">
               <th className="border border-gray-500 px-4 py-2">Team Name</th>
               <th className="border border-gray-500 px-4 py-2">Race</th>
+              <th className="border border-gray-500 px-4 py-2">Home wins</th>
+              <th className="border border-gray-500 px-4 py-2">Away wins</th>
+              <th className="border border-gray-500 px-4 py-2">Total wins</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +56,15 @@ function Leaderboards({ onSignOut }) {
                 </td>
                 <td className="border border-gray-500 px-4 py-2">
                   {team.race}
+                </td>
+                <td className="border border-gray-500 px-4 py-2">
+                  {team.home_wins}
+                </td>
+                <td className="border border-gray-500 px-4 py-2">
+                  {team.away_wins}
+                </td>
+                <td className="border border-gray-500 px-4 py-2">
+                  {team.total_wins}
                 </td>
               </tr>
             ))}

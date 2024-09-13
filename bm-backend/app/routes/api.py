@@ -1,9 +1,11 @@
 from fastapi import Request, APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from app.dependencies import oauth
 from app.db import get_db, SessionLocal
+from sqlalchemy import func, case
 from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
-from app.models import Team, User, Player
+from app.models import Team, User, Player, MatchResult
 
 router = APIRouter()
 
@@ -36,8 +38,49 @@ def get_teams(current_user: User = Depends(get_current_user), db: Session = Depe
 
 @router.get("/allteams")
 def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    teams = db.query(Team).all()
-    return teams
+    # Subquery to count wins for each team
+    win_count_subquery = (
+        db.query(
+            Team.id.label("team_id"),
+            func.count(case((MatchResult.home_score > MatchResult.away_score, 1))).label("home_wins"),
+            func.count(case((MatchResult.away_score > MatchResult.home_score, 1))).label("away_wins"),
+        )
+        .outerjoin(MatchResult, MatchResult.home_team_id == Team.id)
+        .group_by(Team.id)
+        .subquery()
+    )
+
+    # Main query to select teams and their win counts
+    teams = (
+        db.query(
+            Team.id,
+            Team.name,
+            Team.race,
+            func.coalesce(win_count_subquery.c.home_wins, 0).label("home_wins"),
+            func.coalesce(win_count_subquery.c.away_wins, 0).label("away_wins"),
+            (func.coalesce(win_count_subquery.c.home_wins, 0) + func.coalesce(win_count_subquery.c.away_wins, 0)).label("total_wins")
+        )
+        .outerjoin(win_count_subquery, win_count_subquery.c.team_id == Team.id)
+        .all()
+    )
+
+    # Convert the query result to a list of dictionaries (JSON-serializable)
+    result = []
+    for team in teams:
+        result.append({
+            "id": team.id,
+            "name": team.name,
+            "race": team.race,
+            "home_wins": team.home_wins,
+            "away_wins": team.away_wins,
+            "total_wins": team.total_wins
+        })
+
+    # Sort the result by total_wins in descending order before returning
+    sorted_result = sorted(result, key=lambda x: x["total_wins"], reverse=True)
+
+    # Return the sorted result using FastAPI's jsonable_encoder to ensure proper encoding
+    return jsonable_encoder(sorted_result)
 
 # Define the CreateTeamRequest class here
 class CreateTeamRequest(BaseModel):

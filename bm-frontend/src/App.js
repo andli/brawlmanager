@@ -5,13 +5,14 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import { checkUserSession, signOut } from "./api";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Leaderboards from "./components/Leaderboards";
 import Navbar from "./components/Navbar";
-import { checkUserSession, signOut } from "./api";
+import MatchSimulator from "./components/MatchSimulator";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -83,6 +84,16 @@ function App() {
               element={
                 isAuthenticated ? (
                   <Leaderboards onSignOut={handleSignOut} />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+            <Route
+              path="/matches"
+              element={
+                isAuthenticated ? (
+                  <MatchSimulator onSignOut={handleSignOut} />
                 ) : (
                   <Navigate to="/" />
                 )

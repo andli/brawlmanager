@@ -1,6 +1,6 @@
 // Leaderboards.js
 import React, { useEffect, useState } from "react";
-import { fetchAllTeams } from "../api"; // Import the fetchTeams function
+import { fetchAllTeams } from "../api";
 
 function Leaderboards({ onSignOut }) {
   const [teams, setTeams] = useState([]);

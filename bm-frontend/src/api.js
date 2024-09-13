@@ -8,6 +8,40 @@ const api = axios.create({
 
 export default api;
 
+// WebSocket connection function
+export const connectToMatchWebSocket = (
+  homeTeamId,
+  awayTeamId,
+  tickSpeed,
+  onMessage,
+  onError,
+  onClose
+) => {
+  const ws = new WebSocket(
+    `ws://localhost:8000/api/ws/match?home_team_id=${homeTeamId}&away_team_id=${awayTeamId}&tick_speed=${tickSpeed}`
+  );
+
+  ws.onopen = () => {
+    console.log("WebSocket connection opened");
+  };
+
+  ws.onmessage = (event) => {
+    onMessage(event.data); // Pass the received message to the callback function
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    onError(error); // Pass the error to the callback function
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket connection closed");
+    onClose(); // Trigger callback on close
+  };
+
+  return ws; // Return the WebSocket instance to be used for sending messages or closing the connection if needed
+};
+
 // Fetch the authenticated user's data
 export const fetchUser = async () => {
   try {
@@ -45,12 +79,9 @@ export const fetchAllTeams = async () => {
 export const signOut = async () => {
   try {
     await api.post("/api/auth/signout");
-    // Clear client-side state or local storage
-    localStorage.removeItem("user"); // If you store user info in local storage
-    sessionStorage.removeItem("user"); // If you use session storage
-
-    // Optionally, redirect to a different page
-    window.location.href = "/"; // or another appropriate URL
+    localStorage.removeItem("user"); // Clear local storage
+    sessionStorage.removeItem("user"); // Clear session storage
+    window.location.href = "/"; // Redirect to home
 
     return true;
   } catch (error) {
@@ -70,10 +101,8 @@ export const checkUserSession = async () => {
   } catch (error) {
     console.error("Error checking user session", error);
     if (error.response && error.response.status === 401) {
-      // User is not authenticated
-      return null;
+      return null; // User not authenticated
     }
-    // Other error cases
     return null;
   }
 };

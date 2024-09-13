@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 function Navbar({ isAuthenticated, onSignOut }) {
   return (
     <nav className="bg-gray-500 text-white p-3">
-      <div className="mx-auto flex items-start justify-between">
+      <div className="mx-auto flex items-baseline justify-between">
         {/* Left: Title and Menu */}
-        <div className="flex items-center space-x-10">
+        <div className="flex items-baseline space-x-10">
           {/* Title */}
           <div className="text-2xl font-bold">Brawl Manager</div>
 
@@ -35,7 +35,7 @@ function Navbar({ isAuthenticated, onSignOut }) {
 
         {/* Right: User Profile */}
         {isAuthenticated && (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-baseline space-x-4">
             <Link
               to="/profile"
               className="text-white no-underline hover:text-gray-400"

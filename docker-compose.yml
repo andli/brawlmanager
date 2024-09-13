@@ -5,7 +5,8 @@ services:
     image: gcr.io/brawlmanager/brawlmanager-backend
     build:
       context: ./bm-backend
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.prod
+    platform: linux/amd64
     env_file: .env
     environment:
       - PORT=8000
@@ -20,7 +21,7 @@ services:
     image: gcr.io/brawlmanager/brawlmanager-backend-dev
     build:
       context: ./bm-backend
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.dev
     env_file: .env
     environment:
       - PORT=8000
@@ -40,6 +41,7 @@ services:
       dockerfile: dockerfile.prod
       args:
         - REACT_APP_API_URL
+    platform: linux/amd64
     environment:
       - PORT=3000
     env_file: .env

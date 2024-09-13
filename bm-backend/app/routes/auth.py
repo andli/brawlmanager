@@ -54,7 +54,13 @@ async def auth(request: Request):
             user = create_user(db, user_info)
 
         # Save the refresh token and access token expiry
-        user.refresh_token = token.get('refresh_token')
+        refresh_token = token.get('refresh_token')
+        if not refresh_token:
+            print(f"Refresh token is missing for user {user.email}")
+            # You can decide whether to raise an error here or proceed, depending on your use case
+            # return JSONResponse(status_code=500, content={"message": "Refresh token is missing"})
+
+        user.refresh_token = refresh_token
         access_token_expiry = datetime.utcnow() + timedelta(seconds=token.get('expires_in'))
         user.access_token_expiry = access_token_expiry
 
@@ -70,43 +76,65 @@ async def auth(request: Request):
         return RedirectResponse(url=f"{frontend_url}/dashboard")
     
     except ValueError as ve:
+        print(f"ValueError during OAuth process: {ve}")
         return JSONResponse(status_code=500, content={"message": "Invalid token response"})
     
     except Exception as e:
+        print(f"Exception during OAuth process: {e}")
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 async def refresh_access_token_if_needed(user: User, db: Session):
     print("Refreshing access token if needed...")
+    
+    if not user.refresh_token:
+        print(f"User {user.email} has no refresh token. Cannot refresh access token.")
+        raise HTTPException(status_code=401, detail="User has no refresh token. Please log in again.")
+    
     if datetime.now(timezone.utc) >= user.access_token_expiry:
+        print("Access token expired, attempting to refresh...")
+        
         # Access token expired, refresh it
-        token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
+        try:
+            token = await oauth.google.refresh_token(token_url=oauth.google.token_url, refresh_token=user.refresh_token)
+        except Exception as e:
+            print(f"Error refreshing token for user {user.email}: {e}")
+            raise HTTPException(status_code=401, detail="Failed to refresh access token")
         
         if not token:
+            print("Failed to retrieve a new access token during refresh.")
             raise HTTPException(status_code=401, detail="Failed to refresh access token")
-        print("Got token!")
+        
+        print(f"Got new access token for user {user.email}")
         
         # Update user's access token and expiry
         user.access_token_expiry = datetime.now(timezone.utc) + timedelta(seconds=token.get('expires_in'))
         db.commit()
+        print(f"New access token expiry: {user.access_token_expiry}")
         return token.get('access_token')
 
+    print("Access token is still valid.")
     return None  # Token is still valid
 
 @router.get("/auth/check-session")
 async def check_session(request: Request):
+    print("Checking session data...")
     user_data = request.session.get('user')
+    
     if not user_data:
+        print("No user data in session.")
         raise HTTPException(status_code=401, detail="User not authenticated")
 
     db = SessionLocal()
     user = get_user_by_email(db, user_data['email'])
     
-    if user:
-        access_token = await refresh_access_token_if_needed(user, db)
-        return {"message": "Session is valid", "access_token": access_token}
-    
-    raise HTTPException(status_code=401, detail="Invalid session")
+    if not user:
+        print(f"User not found in the database: {user_data['email']}")
+        raise HTTPException(status_code=401, detail="User not found")
 
+    print(f"User {user.email} found. Checking token expiry and refreshing if necessary.")
+    access_token = await refresh_access_token_if_needed(user, db)
+    
+    return {"message": "Session is valid", "access_token": access_token}
 
 @router.post("/auth/signout")
 async def sign_out(request: Request, response: Response):

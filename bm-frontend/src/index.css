@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply besley-normal;
+  }
+}
+
 /* Apply Averia Regular font to all heading classes */
 @layer components {
   h1,
@@ -19,6 +25,10 @@
 }
 
 /* Buttons */
+button {
+  @apply averia-serif-libre-regular;
+}
+
 .confirm_button {
   @apply bg-blue-600 text-white mr-2 px-4 py-2 rounded-lg hover:bg-blue-700;
 }
@@ -78,6 +88,9 @@ li {
 /* Tables */
 table {
   @apply w-full border-collapse;
+}
+th {
+  @apply averia-serif-libre-regular;
 }
 
 th,
@@ -151,8 +164,9 @@ label {
   font-style: normal;
 }
 
-.road-rage-regular {
-  font-family: "Road Rage", sans-serif;
+.besley-normal {
+  font-family: "Besley", serif;
+  font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
 }

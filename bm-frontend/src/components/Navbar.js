@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Navbar({ isAuthenticated, onSignOut }) {
   return (
-    <nav className="bg-gray-500 text-white p-3">
+    <nav className="bg-red-600 text-white p-3">
       <div className="mx-auto flex items-center justify-between">
         {/* Left: Title and Menu */}
         <div className="flex items-center space-x-10">

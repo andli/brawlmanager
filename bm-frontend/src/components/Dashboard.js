@@ -90,15 +90,13 @@ function Dashboard({ onSignOut }) {
         Welcome to Brawl Manager! Manage your team and players, sign up for
         leagues, or play exhibition matches with your friends.
       </p>
-      <p>
-        Coming soon:
-        <ul>
-          <li>Buy and sell players</li>
-          <li>Player gear</li>
-          <li>Not so accurate football field simulation</li>
-          <li>Player injuries and death</li>
-        </ul>
-      </p>
+      <p>Coming soon:</p>
+      <ul>
+        <li>Buy and sell players</li>
+        <li>Player gear</li>
+        <li>Not so accurate football field simulation</li>
+        <li>Player injuries and death</li>
+      </ul>
       <div>
         {teams.length > 0 && (
           <Team team={teams[0]} onTeamCreated={handleTeamCreated} />

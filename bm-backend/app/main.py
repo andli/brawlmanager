@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware 
-from app.routes import auth, api
+from app.routes import auth, api, match
 from app.db import database
 from app.config import settings
 
@@ -33,3 +33,4 @@ async def shutdown():
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(api.router, prefix="/api")
+app.include_router(match.router, prefix="/api")

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
+from datetime import datetime, timezone
 from app.db import Base
 
 class User(Base):
@@ -34,3 +35,16 @@ class Player(Base):
     team_id = Column(Integer, ForeignKey('teams.id'))
 
     team = relationship("Team", back_populates="players")
+
+class MatchResult(Base):
+    __tablename__ = "match_results"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    home_team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)
+    away_team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)
+    home_score = Column(Integer, nullable=False)
+    away_score = Column(Integer, nullable=False)
+    finished_at = Column(DateTime, default=datetime.now(timezone.utc))
+
+    home_team = relationship("Team", foreign_keys=[home_team_id])
+    away_team = relationship("Team", foreign_keys=[away_team_id])

@@ -1,5 +1,4 @@
 import React from "react";
-import Player from "./Player";
 import CreateTeamForm from "./CreateTeamForm";
 
 function Team({ team, onTeamCreated }) {

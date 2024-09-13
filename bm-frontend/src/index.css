@@ -84,7 +84,7 @@ ol {
 }
 
 li {
-  @apply mb-2;
+  @apply mb-1;
 }
 
 /* Tables */

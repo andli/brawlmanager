@@ -25,6 +25,7 @@ function App() {
       }
       setLoading(false);
     };
+    document.title = "Brawl Manager";
 
     checkSession();
   }, []);

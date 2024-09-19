@@ -3,6 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from databases import Database
 from app.config import settings
+from sqlalchemy.future import select
+from datetime import datetime, timedelta, timezone
+import uuid
 
 # Database URL from settings
 DATABASE_URL = settings.SQLALCHEMY_DATABASE_URI
@@ -28,8 +31,8 @@ def get_db():
 
 # Create the tables in the database (only if they don't exist)
 def init_db():
-    # Import the models here to ensure they are registered properly before creating the tables
-    from app.models import User, Team, Player  # Import the model(s) here
+    # Delay importing models to avoid circular import issues
+    from app.models import User, Team, Player, Session  # Import all model(s) here
     Base.metadata.create_all(bind=engine)
 
 # Call init_db() to ensure the tables are created

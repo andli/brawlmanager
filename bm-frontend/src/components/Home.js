@@ -1,29 +1,20 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { checkUserSession } from '../api';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const isAuthenticated = await checkUserSession();
-        if (isAuthenticated) {
-          navigate('/dashboard');
-        } else {
-          navigate('/login');
-        }
-      } catch (error) {
-        console.error('Error checking user session:', error);
-        navigate('/login');
-      }
-    };
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
-    checkAuth();
-  }, [navigate]);
-
-  return <div>Loading...</div>;
+  return (
+    <div>
+      <h1>Welcome to Brawl Manager</h1>
+      <p>Please log in to continue.</p>
+      <button onClick={handleLogin}>Login</button>
+    </div>
+  );
 }
 
 export default Home;

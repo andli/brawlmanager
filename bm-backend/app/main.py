@@ -1,9 +1,10 @@
+# main.py
 import os
 from fastapi import FastAPI
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi.middleware.cors import CORSMiddleware 
+from fastapi.middleware.cors import CORSMiddleware
 from app.routes import auth, api, match
 from app.db import database
+from app.session_backend import PostgresSessionMiddleware  # Adjust the import as necessary
 from app.config import settings
 
 app = FastAPI()
@@ -11,26 +12,32 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],  # Update with the specific frontend origin
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allow all headers (e.g., Content-Type, Authorization)
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Fetch the secret key from the environment variable
-secret_key = settings.SECRET_KEY
+# Add the custom Postgres session middleware with proper cookie settings
+app.add_middleware(
+    PostgresSessionMiddleware,
+    secret_key=settings.SECRET_KEY,
+    samesite='lax',        # Use 'lax' for development
+    https_only=False,      # Set to False to avoid setting 'Secure' attribute
+    max_age=14 * 24 * 60 * 60,
+)
 
-# Add SessionMiddleware with the secret key from the environment
-app.add_middleware(SessionMiddleware, secret_key=secret_key)
-
+# Connect to the database on startup
 @app.on_event("startup")
 async def startup():
     await database.connect()
 
+# Disconnect from the database on shutdown
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
 
+# Include the routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(api.router, prefix="/api")
 app.include_router(match.router, prefix="/api")

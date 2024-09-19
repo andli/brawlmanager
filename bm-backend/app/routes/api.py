@@ -10,9 +10,9 @@ from app.models import Team, User, Player, MatchResult
 router = APIRouter()
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    user_info = request.session.get('user')  # Retrieve the user dict
+    user_info = request.state.session.get('user')  # Retrieve the user dict
     if not user_info:
-        raise HTTPException(status_code=401, detail="User not authenticated")
+        raise HTTPException(status_code=401, detail="User not authenticated (api.py)")
     
     user_email = user_info.get('email')  # Extract the email from the dict
     if not user_email:
@@ -28,7 +28,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
 def get_user(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     if user:
         return user
-    raise HTTPException(status_code=401, detail="User not authenticated")
+    raise HTTPException(status_code=401, detail="User not authenticated (api.py)")
 
 
 @router.get("/teams")

@@ -6,6 +6,17 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Interceptor for handling unauthorized responses
+/* api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/login`;
+    }
+    return Promise.reject(error);
+  }
+); */
+
 export default api;
 
 // WebSocket connection function
@@ -17,8 +28,12 @@ export const connectToMatchWebSocket = (
   onError,
   onClose
 ) => {
+  const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
   const ws = new WebSocket(
-    `ws://localhost:8000/api/ws/match?home_team_id=${homeTeamId}&away_team_id=${awayTeamId}&tick_speed=${tickSpeed}`
+    `${wsProtocol}://${process.env.REACT_APP_API_URL.replace(
+      /^https?:\/\//,
+      ""
+    )}/api/ws/match?home_team_id=${homeTeamId}&away_team_id=${awayTeamId}&tick_speed=${tickSpeed}`
   );
 
   ws.onopen = () => {
@@ -92,17 +107,15 @@ export const signOut = async () => {
 
 // Function to check if the user is logged in
 export const checkUserSession = async () => {
-  console.log("baseURL:", process.env.REACT_APP_API_URL);
   try {
     const response = await api.get("/api/auth/check-session");
     if (response.status === 200) {
       return response.data;
     }
+    return null;
   } catch (error) {
-    console.error("Error checking user session", error);
-    if (error.response && error.response.status === 401) {
-      return null; // User not authenticated
-    }
+    // Handle error without causing additional redirects or loops
+    console.error("Error checking user session:", error);
     return null;
   }
 };

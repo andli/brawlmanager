@@ -1,8 +1,18 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from app.db import Base
+
+class Session(Base):
+    __tablename__ = 'sessions'
+
+    session_id = Column(String, primary_key=True)
+    session_data = Column(JSON)
+    expires_at = Column(DateTime(timezone=True))  # Ensure timezone-aware datetimes
+
+    def is_expired(self):
+        return datetime.now(timezone.utc) > self.expires_at
 
 class User(Base):
     __tablename__ = "users"

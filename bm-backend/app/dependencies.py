@@ -1,6 +1,15 @@
-from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 
 from app.config import settings
+
+class CustomOAuth2App(StarletteOAuth2App):
+    async def save_authorize_data(self, request, redirect_uri, state, **kwargs):
+        # Store OAuth data in your custom session state
+        request.state.session['state'] = state
+        request.state.session['_state_google_' + state] = {
+            'redirect_uri': redirect_uri,
+            **kwargs
+        }
 
 oauth = OAuth()
 oauth.register(
@@ -17,5 +26,6 @@ oauth.register(
         'scope': 'openid email profile',
         'issuer': 'https://accounts.google.com',
     },
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration'
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    app=CustomOAuth2App
 )

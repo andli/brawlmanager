@@ -1,12 +1,13 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, JSON
-from sqlalchemy.orm import relationship, DeclarativeBase
+from sqlalchemy.orm import relationship, DeclarativeBase, Mapped
 from sqlalchemy.dialects.postgresql import ARRAY
 from fastapi_users.db import (
     SQLAlchemyBaseOAuthAccountTableUUID,
     SQLAlchemyBaseUserTableUUID,
 )
+from typing import List
+import uuid
 from datetime import datetime, timezone, timedelta
-from app.db import Base
 
 class Base(DeclarativeBase):
     pass
@@ -14,9 +15,9 @@ class Base(DeclarativeBase):
 class Session(Base):
     __tablename__ = "sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))  # UUID primary key
-    session_data = Column(JSON, nullable=False)  # Store the session data
-    expires_at = Column(DateTime(timezone=True), nullable=False)  # Expiration time
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4())) 
+    session_data = Column(JSON, nullable=False)  
+    expires_at = Column(DateTime(timezone=True), nullable=False) 
 
     def is_expired(self):
         return datetime.now(timezone.utc) > self.expires_at
@@ -27,7 +28,7 @@ class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
 class User(Base, SQLAlchemyBaseUserTableUUID):
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))  # UUID primary key
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4())) 
     name = Column(String, nullable=True)
     picture = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)

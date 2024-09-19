@@ -1,7 +1,7 @@
 from fastapi import Request, APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from app.dependencies import oauth
-from app.db import get_db, SessionLocal
+from app.dependencies import google_oauth_client as oauth
+from app.db import get_async_session
 from sqlalchemy import func, case
 from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
@@ -9,7 +9,7 @@ from app.models import Team, User, Player, MatchResult
 
 router = APIRouter()
 
-def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+def get_current_user(request: Request, db: Session = Depends(get_async_session)) -> User:
     user_info = request.state.session.get('user')  # Retrieve the user dict
     if not user_info:
         raise HTTPException(status_code=401, detail="User not authenticated (api.py)")
@@ -25,21 +25,21 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
     return user
 
 @router.get("/user")
-def get_user(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def get_user(db: Session = Depends(get_async_session), user: User = Depends(get_current_user)):
     if user:
         return user
     raise HTTPException(status_code=401, detail="User not authenticated (api.py)")
 
 
 @router.get("/teams")
-def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_async_session)):
     teams = db.query(Team).filter(Team.owner_id == current_user.id).options(joinedload(Team.players)).all()
     return teams
 
 from sqlalchemy import func, case
 
 @router.get("/allteams")
-def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_teams(current_user: User = Depends(get_current_user), db: Session = Depends(get_async_session)):
     # Subquery to count wins for both home and away teams
     win_count_subquery = (
         db.query(
@@ -95,7 +95,7 @@ class CreateTeamRequest(BaseModel):
     race: str
 
 @router.post("/teams")
-def create_team(team_data: CreateTeamRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_team(team_data: CreateTeamRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_async_session)):
 
     # Check if the user already has a team
     existing_team = db.query(Team).filter(Team.owner_id == current_user.id).first()
@@ -117,7 +117,7 @@ class CreatePlayerRequest(BaseModel):
     team_id: int      # Foreign key to link the player to a team
 
 @router.post("/players")
-def create_player(player_data: CreatePlayerRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_player(player_data: CreatePlayerRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_async_session)):
 
     # Check if the team exists and belongs to the current user
     team = db.query(Team).filter(Team.id == player_data.team_id, Team.owner_id == current_user.id).first()

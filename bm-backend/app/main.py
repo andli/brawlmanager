@@ -3,8 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import auth, api, match
-from app.db import database
-from app.session_backend import PostgresSessionMiddleware  # Adjust the import as necessary
+from app.db import engine
 from app.config import settings
 
 app = FastAPI()
@@ -20,7 +19,7 @@ app.add_middleware(
 
 # Add the custom Postgres session middleware with proper cookie settings
 app.add_middleware(
-    PostgresSessionMiddleware,
+    CORSMiddleware,
     secret_key=settings.SECRET_KEY,
     samesite='lax',        # Use 'lax' for development
     https_only=False,      # Set to False to avoid setting 'Secure' attribute
@@ -30,12 +29,12 @@ app.add_middleware(
 # Connect to the database on startup
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    await engine.connect()
 
 # Disconnect from the database on shutdown
 @app.on_event("shutdown")
 async def shutdown():
-    await database.disconnect()
+    await engine.disconnect()
 
 # Include the routers
 app.include_router(auth.router, prefix="/api")

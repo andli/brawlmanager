@@ -1,23 +1,10 @@
 from fastapi import Depends
-from fastapi_users.db import (
-    SQLAlchemyBaseOAuthAccountTableUUID,
-    SQLAlchemyBaseUserTableUUID,
-    SQLAlchemyUserDatabase,
-)
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
 from app.config import settings
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from fastapi_users.db import SQLAlchemyUserDatabase
-from fastapi_users.sessions import SessionDBAdapter
-from app.models import User
+from app.models import User, OAuthAccount
 from typing import AsyncGenerator, List
-from app.db import OAuthAccount
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from fastapi import Depends
-from fastapi_users.db import (
-    SQLAlchemyUserDatabase,
-)
+
 
 # Use an async database URL
 DATABASE_URL = settings.SQLALCHEMY_DATABASE_URI.replace('postgresql://', 'postgresql+asyncpg://')

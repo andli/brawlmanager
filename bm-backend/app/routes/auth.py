@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Request, HTTPException, Depends, Response
 from starlette.responses import RedirectResponse, JSONResponse
-from app.dependencies import oauth
+from app.dependencies import google_oauth_client as oauth
 from app.config import settings
-from app.db import session_db_adapter
 from sqlalchemy.orm import Session
 from app.models import User
 import uuid
@@ -17,11 +16,11 @@ async def login(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 # Helper function to get user by email
-def get_user_by_email(email: str, db=Depends(session_db_adapter)):
+def get_user_by_email(email: str, db: Session):
     return db.query(User).filter(User.email == email).first()
 
 # Helper function to create new user
-def create_user(db: Session, user_info = Depends(fastapi_users.get_current_active_user)):
+def create_user(db: Session, user_info: User):
     db_user = User(email=user_info['email'], name=user_info['name'], picture=user_info['picture'])
     db.add(db_user)
     db.commit()

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.orm import Session
-from app.db import get_db
+from app.db import get_async_session
 from app.models import MatchResult, Team
 import random
 import asyncio
@@ -60,7 +60,7 @@ async def websocket_endpoint(
     home_team_id: int, 
     away_team_id: int, 
     tick_speed: float,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_async_session)
 ):
     # Validate that both teams exist
     home_team = db.query(Team).filter(Team.id == home_team_id).first()

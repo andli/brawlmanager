@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from app.config import settings
 from fastapi_users.db import SQLAlchemyUserDatabase
-from app.models import User, OAuthAccount
+from app.models import Base, User, OAuthAccount
 from typing import AsyncGenerator, List
 
 

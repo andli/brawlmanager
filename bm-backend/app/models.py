@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, JSON
+from sqlalchemy import Column, Integer, String, UUID, ForeignKey, DateTime, JSON
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped
 from sqlalchemy.dialects.postgresql import ARRAY
 from fastapi_users.db import (
@@ -23,20 +23,25 @@ class Session(Base):
         return datetime.now(timezone.utc) > self.expires_at
 
 class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
-    pass
+    __tablename__ = "oauth_account"
+    
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user = relationship("User", back_populates="oauth_accounts")
 
 class User(Base, SQLAlchemyBaseUserTableUUID):
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4())) 
+    id = Column(Integer, primary_key=True, autoincrement=True) 
     name = Column(String, nullable=True)
     picture = Column(String, nullable=True)
     refresh_token = Column(String, nullable=True)
     access_token_expiry = Column(DateTime(timezone=True), nullable=True)
     oauth_accounts: Mapped[List[OAuthAccount]] = relationship(
-        "OAuthAccount", lazy="joined"
+        "OAuthAccount", back_populates="user", lazy="joined"
     )
     teams = relationship("Team", back_populates="owner")
+
+
 
 class Team(Base):
     __tablename__ = "teams"

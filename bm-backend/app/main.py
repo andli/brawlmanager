@@ -1,12 +1,19 @@
 # main.py
 import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import auth, api, match
-from app.db import engine
+from app.db import engine, create_db_and_tables
 from app.config import settings
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Not needed if you setup a migration system like Alembic
+    await create_db_and_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
@@ -15,14 +22,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-# Add the custom Postgres session middleware with proper cookie settings
-app.add_middleware(
-    CORSMiddleware,
-    secret_key=settings.SECRET_KEY,
-    samesite='lax',        # Use 'lax' for development
-    https_only=False,      # Set to False to avoid setting 'Secure' attribute
+    #secret_key=settings.SECRET_KEY,
+    #samesite='lax',        # Use 'lax' for development
+    #   https_only=False,      # Set to False to avoid setting 'Secure' attribute
     max_age=14 * 24 * 60 * 60,
 )
 

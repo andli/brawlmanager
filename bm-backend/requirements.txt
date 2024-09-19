@@ -4,9 +4,6 @@ sqlalchemy
 databases
 pydantic
 python-dotenv
-httpx
-oauthlib
-authlib
 asyncpg
 psycopg2-binary
 itsdangerous>=2.0

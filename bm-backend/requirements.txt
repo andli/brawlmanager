@@ -11,3 +11,5 @@ asyncpg
 psycopg2-binary
 itsdangerous>=2.0
 websockets
+fastapi-users[sqlalchemy,oauth]
+httpx_oauth

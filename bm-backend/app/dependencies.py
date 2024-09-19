@@ -1,17 +1,9 @@
-from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
+from httpx_oauth.clients.google import GoogleOAuth2
 
 from app.config import settings
 
-class CustomOAuth2App(StarletteOAuth2App):
-    async def save_authorize_data(self, request, redirect_uri, state, **kwargs):
-        # Store OAuth data in your custom session state
-        request.state.session['state'] = state
-        request.state.session['_state_google_' + state] = {
-            'redirect_uri': redirect_uri,
-            **kwargs
-        }
+google_oauth_client = GoogleOAuth2(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET)
 
-oauth = OAuth()
 oauth.register(
     name='google',
     client_id=settings.GOOGLE_CLIENT_ID,

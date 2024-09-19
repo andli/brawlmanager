@@ -1,39 +1,39 @@
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from databases import Database
+from fastapi import Depends
+from fastapi_users.db import (
+    SQLAlchemyBaseOAuthAccountTableUUID,
+    SQLAlchemyBaseUserTableUUID,
+    SQLAlchemyUserDatabase,
+)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
 from app.config import settings
-from sqlalchemy.future import select
-from datetime import datetime, timedelta, timezone
-import uuid
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users.sessions import SessionDBAdapter
+from app.models import User
+from typing import AsyncGenerator, List
+from app.db import OAuthAccount
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from fastapi import Depends
+from fastapi_users.db import (
+    SQLAlchemyUserDatabase,
+)
 
-# Database URL from settings
-DATABASE_URL = settings.SQLALCHEMY_DATABASE_URI
+# Use an async database URL
+DATABASE_URL = settings.SQLALCHEMY_DATABASE_URI.replace('postgresql://', 'postgresql+asyncpg://')
 
-# Initialize the Database connection
-database = Database(DATABASE_URL)
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_async_engine(DATABASE_URL)
+async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
-# Create a MetaData instance
-metadata = MetaData()
+async def create_db_and_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-# Base class for ORM models
-Base = declarative_base()
 
-# Dependency for getting the session in FastAPI routes
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session
 
-# Create the tables in the database (only if they don't exist)
-def init_db():
-    # Delay importing models to avoid circular import issues
-    from app.models import User, Team, Player, Session  # Import all model(s) here
-    Base.metadata.create_all(bind=engine)
 
-# Call init_db() to ensure the tables are created
-init_db()
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User, OAuthAccount)
